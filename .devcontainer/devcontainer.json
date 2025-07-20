@@ -1,0 +1,28 @@
+{
+  "name": "prospectivity-heatmap",
+  "build": { "dockerfile": "Dockerfile" },
+  "workspaceFolder": "/workspaces/prospectivity-heatmap",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12",
+      "installTools": true
+    },
+    "ghcr.io/devcontainers/features/gdal:2": {
+      "version": "3.9.0"
+    }
+  },
+  "postCreateCommand": [
+    "pip install -e .[dev]",
+    "pre-commit install"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "njpwerner.autodocstring",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}

@@ -29,8 +29,8 @@ def load_bedrock() -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
         If either of the requested rock types cannot be found in the
         dataset.
     """
-    # Read the dataset and reproject to the configured CRS
-    gdf = gpd.read_file(settings.paths["input_gpkg"]).to_crs(settings.crs)
+    # Read the dataset with Pyogrio for faster I/O and reproject to the configured CRS
+    gdf = gpd.read_file(settings.paths["input_gpkg"], engine="pyogrio").to_crs(settings.crs)
 
     # Filter by rock type names (case‑insensitive). Some datasets may use
     # different casing; ``na=False`` avoids matching NaN values.

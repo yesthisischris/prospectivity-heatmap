@@ -11,6 +11,7 @@ import pandas as pd
 
 from .config import settings
 
+
 def gaussian(d: np.ndarray, d0_m: float) -> np.ndarray:
     """Return Gaussian kernel values for distances (in metres) and scale.
 
@@ -30,6 +31,11 @@ def gaussian(d: np.ndarray, d0_m: float) -> np.ndarray:
         Array of scores between 0 and 1.
     """
     return np.exp(-((d / d0_m) ** 2))
+
+
+def linear(d: np.ndarray, d0_m: float) -> np.ndarray:
+    """Return linear decay kernel clipped to 0."""
+    return np.clip(1 - (d / d0_m), 0, 1)
 
 
 def compute_likelihood(df: pd.DataFrame) -> pd.DataFrame:

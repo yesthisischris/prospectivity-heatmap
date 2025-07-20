@@ -9,8 +9,8 @@ location specified in the configuration.
 
 from __future__ import annotations
 
-import pandas as pd
 import folium
+import pandas as pd
 from h3ronpy import h3
 
 from .config import settings
@@ -31,7 +31,7 @@ def hex_to_geojson(h3_ids: pd.Series, scores: pd.Series):
     dict
         A GeoJSON feature dictionary for each cell.
     """
-    for hid, score in zip(h3_ids, scores):
+    for hid, score in zip(h3_ids, scores, strict=False):
         # Get boundary coordinates in GeoJSON-friendly format (lon/lat order)
         boundary = h3.h3_to_geo_boundary(hid, geo_json=True)
         yield {
@@ -66,7 +66,9 @@ def build_map(df: pd.DataFrame) -> folium.Map:
     folium.GeoJson(
         {"type": "FeatureCollection", "features": features},
         style_function=lambda feat: {
-            "fillColor": folium.utilities.color_brewer("YlGnBu", 9, feat["properties"]["score"])[-1],
+            "fillColor": folium.utilities.color_brewer("YlGnBu", 9, feat["properties"]["score"])[
+                -1
+            ],
             "color": "#444",
             "weight": 0.3,
             "fillOpacity": 0.6,

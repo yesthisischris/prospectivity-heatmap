@@ -6,7 +6,6 @@ columnar storage and compatibility with cloud analytics engines.
 """
 
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 import pyarrow as pa
@@ -15,7 +14,7 @@ import pyarrow.parquet as pq
 from .config import settings
 
 
-def write_parquet(df: pd.DataFrame, output_path: Optional[Path] = None) -> Path:
+def write_parquet(df: pd.DataFrame, output_path: Path | None = None) -> Path:
     """Write DataFrame of prospectivity scores to a Parquet file.
 
     Parameters
