@@ -1,0 +1,28 @@
+[project]
+name = "prospectivity-heatmap"
+version = "0.1.0"
+description = "Geospatial prospectivity heatmap using H3 indexing"
+authors = [ { name = "Prospectivity Heatmap" } ]
+readme = "README.md"
+requires-python = ">=3.10"
+
+# Core dependencies needed to run the pipeline. Versions are provided as
+# lower bounds; newer versions should work as well.
+dependencies = [
+    "geopandas>=0.14.0",
+    "h3ronpy>=1.0.3",
+    "shapely>=2.0.0",
+    "folium>=0.14.0",
+    "pyyaml",
+    "pydantic>=2.0",
+    "pyarrow",
+    "pyogrio"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[project.scripts]
+prospectivity = "src.cli:main"
