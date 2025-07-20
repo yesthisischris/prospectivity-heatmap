@@ -1,0 +1,17 @@
+# All distances expressed in metres unless otherwise stated
+crs: "EPSG:26910"          # NAD83 / UTM zone 10N
+rock_a: "serpentinite"
+rock_b: "granodiorite"
+falloff_km: 10.0           # Gaussian dₘ (in km)
+
+# H3 grid parameters
+grid:
+  type: "h3"
+  resolution: 6            # ≈ 2.6 km hexagon edge
+
+# Output locations
+paths:
+  input_gpkg: "data/raw/BedrockP.gpkg"
+  parquet: "data/processed/prospectivity.parquet"
+  static_png: "data/processed/prospectivity.png"
+  interactive_html: "data/processed/prospectivity.html"
