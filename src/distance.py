@@ -2,22 +2,16 @@
 
 Distances are measured from each hexagon centroid to the nearest polygon
 boundary for both rock types. Results are expressed in the same units as
-the configured CRS (metres for UTM zones). A spatial index (STRtree) is
-used for efficient nearest neighbour queries.
+the configured CRS (metres for UTM zones). Shapely's vectorised distance
+operations provide fast SIMD implementations.
 """
 
 from __future__ import annotations
 
-import pandas as pd
 import geopandas as gpd
-from shapely.geometry import Point
-from shapely.strtree import STRtree
+import pandas as pd
 from h3ronpy import h3
-
-
-def _build_tree(geoms) -> STRtree:
-    """Build a spatial index over the provided geometries."""
-    return STRtree(geoms)
+from shapely.geometry import Point
 
 
 def _centroid_to_point(h3_id: int) -> Point:
@@ -56,12 +50,8 @@ def add_distance_columns(
     grid["geometry"] = grid["h3_id"].apply(_centroid_to_point)
     ggrid = gpd.GeoDataFrame(grid, geometry="geometry", crs="EPSG:4326").to_crs(crs)
 
-    # Build spatial indexes and compute nearest distance for each point
-    for tag, geoms in [("a", rock_a.geometry), ("b", rock_b.geometry)]:
-        tree = _build_tree(geoms)
-        # shapely STRtree returns an index into geoms; nearest() accepts a geometry
-        ggrid[f"dist_{tag}"] = ggrid.geometry.apply(
-            lambda p: tree.nearest(p).distance(p)
-        )
+    # Vectorised distance from each point to the nearest polygon of each type
+    ggrid["dist_a"] = ggrid.geometry.distance(rock_a.unary_union)
+    ggrid["dist_b"] = ggrid.geometry.distance(rock_b.unary_union)
 
     return ggrid
