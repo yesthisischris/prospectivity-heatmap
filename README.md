@@ -26,7 +26,7 @@ interactive web map.
    ```bash
    python -m venv .venv && source .venv/bin/activate
    pip install -e .
-   ```
+    ```
 
 2. Place your `BedrockP.gpkg` file into `data/raw/` and adjust `config.yaml`
    as needed to select different rock types or H3 resolutions.
@@ -37,8 +37,21 @@ interactive web map.
    prospectivity
    ```
 
-   This generates a Parquet file of H3 cell scores and saves an interactive
-   HTML map in `data/processed/`.
+    This generates a Parquet file of H3 cell scores and saves an interactive
+    HTML map in `data/processed/`.
+
+## Development environment with `uv`
+
+`uv` can be used to create a reproducible environment with all development
+dependencies included:
+
+```bash
+uv venv
+uv pip install -e .[dev]
+```
+
+If you are working in Jupyter, ensure the kernel points to this environment so
+that notebooks can `import prospectivity_tools` without issues.
 
 ## Notes
 
