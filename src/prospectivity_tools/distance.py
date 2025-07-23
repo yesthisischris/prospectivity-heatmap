@@ -9,8 +9,11 @@ operations provide fast SIMD implementations.
 from __future__ import annotations
 
 import geopandas as gpd
+
+# `h3ronpy` no longer exposes the basic H3 API. Use the standalone `h3`
+# package for geo conversions.
+import h3
 import pandas as pd
-from h3ronpy import h3
 from shapely.geometry import Point
 
 

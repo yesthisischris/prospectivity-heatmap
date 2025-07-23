@@ -10,8 +10,11 @@ location specified in the configuration.
 from __future__ import annotations
 
 import folium
+
+# Use the standalone `h3` library for converting H3 indexes to coordinates
+# rather than relying on `h3ronpy` which no longer re-exports these helpers.
+import h3
 import pandas as pd
-from h3ronpy import h3
 
 from .config import settings
 
