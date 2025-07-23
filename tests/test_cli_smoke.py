@@ -11,4 +11,4 @@ which is acceptable for this placeholder test.
 
 def test_cli_import() -> None:
     """Ensure the CLI module can be imported."""
-    import src.cli  # noqa: F401
+    import prospectivity_tools.cli  # noqa: F401
