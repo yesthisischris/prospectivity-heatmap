@@ -30,7 +30,7 @@ dev = [
 ]
 
 [project.scripts]
-prospectivity = "src.cli:main"
+prospectivity = "prospectivity_tools.cli:main"
 
 [tool.black]
 target-version = ["py312"]

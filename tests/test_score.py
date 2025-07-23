@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from src.score import gaussian, linear
+from prospectivity_tools.score import gaussian, linear
 
 
 @pytest.mark.parametrize("kernel", [gaussian, linear])
