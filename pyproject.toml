@@ -1,5 +1,5 @@
 [project]
-name = "prospectivity-heatmap"
+name = "prospectivity-tools"
 version = "0.2.0"
 description = "Geospatial prospectivity heatmap using H3 indexing"
 readme = "README.md"

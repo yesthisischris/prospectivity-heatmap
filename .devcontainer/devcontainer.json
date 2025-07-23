@@ -1,7 +1,7 @@
 {
-  "name": "prospectivity-heatmap",
+  "name": "prospectivity-tools",
   "build": { "dockerfile": "Dockerfile" },
-  "workspaceFolder": "/workspaces/prospectivity-heatmap",
+  "workspaceFolder": "/workspaces/prospectivity-tools",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.12",
