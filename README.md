@@ -1,4 +1,4 @@
-# Prospectivity Heatmap
+# Prospectivity Tools
 
 This repository contains a geospatial prospectivity heatmap generator built using
 H3 hexagonal grids, Folium for visualisation, and a configurable pipeline.

@@ -737,7 +737,7 @@ wheels = [
 ]
 
 [[package]]
-name = "prospectivity-heatmap"
+name = "prospectivity-tools"
 version = "0.2.0"
 source = { editable = "." }
 dependencies = [
