@@ -8,11 +8,14 @@ import click
 
 from .config import settings
 from .distance import add_distance_columns
-from .index_h3 import build_grid
 from .ingest import load_bedrock
 from .persist import write_parquet
 from .score import compute_likelihood
 from .viz import build_map
+
+# ``build_grid`` relies on optional binary components of ``h3ronpy``. To avoid
+# import errors when these components are missing (e.g. in lightweight testing
+# environments) we import the function lazily inside ``main``.
 
 
 @click.command()
@@ -37,6 +40,10 @@ def main(overwrite: bool, skip_existing: bool) -> None:
             click.echo("Outputs already exist, skipping")
             return
         raise click.ClickException("Output files exist. Use --overwrite or --skip-existing.")
+
+    # Import here to avoid requiring optional ``h3ronpy`` dependencies when the
+    # CLI module is merely imported during testing.
+    from .index_h3 import build_grid
 
     # Load rock polygons
     rock_a, rock_b = load_bedrock()

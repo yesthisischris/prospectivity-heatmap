@@ -5,13 +5,10 @@ geospatial prospectivity heatmap using H3 indexing. See individual modules
 for details.
 """
 
-from . import config
-from . import score
-from . import viz
-from . import distance
-from . import ingest
-from . import persist
-from . import index_h3
-from . import cli
+from . import cli, config, distance, ingest, persist, score, viz
 
-__all__ = ['config', 'score', 'viz', 'distance', 'ingest', 'persist', 'index_h3', 'cli']
+# ``index_h3`` requires optional binary dependencies from ``h3ronpy``. To
+# avoid import errors when those are not available (e.g. during basic unit
+# tests) it is imported lazily when needed by the CLI.
+
+__all__ = ['config', 'score', 'viz', 'distance', 'ingest', 'persist', 'cli']
