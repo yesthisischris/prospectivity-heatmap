@@ -9,14 +9,15 @@ dependencies = [
   "geopandas>=0.16.0",
   "shapely>=2.1",
   "pyogrio>=0.7",
-  "h3ronpy>=4.1",
+  "h3ronpy>=0.22",
   "folium>=0.17",
   "pydantic>=2.6",
   "click>=8.1",
   "pyarrow>=16.1",
   "pyproj>=3.7",
   "numpy>=2.0",
-  "pandas>=3.0"
+  "pandas>=2.3.1",
+  "ipykernel>=6.30.0",
 ]
 
 [project.optional-dependencies]
@@ -39,3 +40,6 @@ line-length = 100
 line-length = 100
 target-version = "py312"
 lint.select = ["E", "F", "B", "I", "UP"]
+
+[tool.uv]
+package = true

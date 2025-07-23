@@ -1,0 +1,4 @@
+*.pdf
+*.gpkg
+*.egg-info
+*__pycache__
