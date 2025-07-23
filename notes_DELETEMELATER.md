@@ -1,0 +1,6 @@
+-remove this file
+-remove devcontainer?
+-settings just in notebook?
+-search for todo
+-final agentic check
+-different approach: someting like a kernel density plot on top of the interfaces?

@@ -2,3 +2,5 @@
 *.gpkg
 *.egg-info
 *__pycache__
+.env
+scratch.py

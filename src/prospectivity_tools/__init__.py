@@ -1,14 +1,26 @@
-"""Package initialisation for prospectivity heatmap.
+"""Package initialization for prospectivity heatmap.
 
 This package exposes configuration and pipeline functions for building a
 geospatial prospectivity heatmap using H3 indexing. See individual modules
 for details.
 """
 
-from . import cli, config, distance, ingest, persist, score, viz
+# Import everything from submodules
+from .config import settings
+from .distance import add_distance_columns
+from .ingest import load_bedrock
+from .persist import write_parquet
+from .score import compute_likelihood
+from .viz import build_map
+from .utils import df_more_info
 
-# ``index_h3`` requires optional binary dependencies from ``h3ronpy``. To
-# avoid import errors when those are not available (e.g. during basic unit
-# tests) it is imported lazily when needed by the CLI.
-
-__all__ = ['config', 'score', 'viz', 'distance', 'ingest', 'persist', 'cli']
+# Define what gets imported when using `from prospectivity_tools import *`
+__all__ = [
+    'settings',
+    'add_distance_columns',
+    'load_bedrock',
+    'write_parquet',
+    'compute_likelihood',
+    'build_map',
+    'utils'
+]
