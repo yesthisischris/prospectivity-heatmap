@@ -7,7 +7,7 @@ falloff_km: 10.0           # Gaussian dₘ (in km)
 # H3 grid parameters
 grid:
   type: "h3"
-  resolution: 6            # ≈ 2.6 km hexagon edge
+  resolution: 7            # ≈ 2.6 km hexagon edge
 
 # Output locations
 paths:

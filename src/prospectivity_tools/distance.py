@@ -14,9 +14,9 @@ import pandas as pd
 from shapely.geometry import Point
 
 
-def _centroid_to_point(h3_id: str | int) -> Point:
+def _centroid_to_point(h3_id: str) -> Point:
     """Convert an H3 cell ID to a Shapely point (WGS84)."""
-    lat, lng = h3.cell_to_latlng(h3_id)  # Updated syntax
+    lat, lng = h3.h3_to_geo(h3_id)  # Updated syntax for h3==3.7.6
     return Point(lng, lat)              # Shapely expects (x=lng, y=lat)
 
 

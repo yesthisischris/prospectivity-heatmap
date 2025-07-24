@@ -1,6 +1,12 @@
 -remove this file
 -remove devcontainer?
--settings just in notebook?
+-settings just in notebook? or at least display them
 -search for todo
 -final agentic check
--different approach: someting like a kernel density plot on top of the interfaces?
+-simplify modules, etl, spatial, science, viz, utils?
+-in notebook, explain approach, data, methods, results
+-add legend to heatmap
+-later: little webapp?
+-check the classification
+-write a "future work" section
+-different approach: something like a kernel density plot on top of the interfaces?

@@ -10,27 +10,26 @@ name = "prospectivity-tools"
 version = "0.2.0"
 description = "Geospatial prospectivity heatmap using H3 indexing"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = "==3.10.*"
 
 dependencies = [
-  "geopandas>=0.16.0",
-  "shapely>=2.1",
-  "pyogrio>=0.7",
-  "h3ronpy>=0.22",
-  "h3>=4.3",
-  "folium>=0.17",
-  "pydantic>=2.6",
-  "click>=8.1",
-  "pyarrow>=16.1",
-  "pyproj>=3.7",
-  "numpy>=2.0",
-  "pandas>=2.3.1",
-  "ipykernel>=6.30.0",
-  "pyyaml>=6.0.2",
-  "mapclassify>=2.10.0",
-  "matplotlib>=3.10.3",
-  "llama-index>=0.12.52",
-  "langchain>=0.3.26",
+  "geopandas==0.12.0",
+  "shapely==1.8.5",
+  "pyogrio==0.4.1",
+  "h3==3.7.6",
+  "folium==0.12.1",
+  "pydantic==1.10.2",
+  "click==8.1",
+  "pyarrow==10.0.1",
+  "pyproj==3.4.1",
+  "numpy==1.23.5",
+  "pandas==1.5.3",
+  "ipykernel>=6.20.0",
+  "pyyaml==6.0",
+  "mapclassify==2.4.3",
+  "matplotlib==3.5.3",
+  "llama-index>=0.8.69",
+  "langchain>=0.0.354",
 ]
 
 [project.optional-dependencies]
@@ -42,16 +41,13 @@ dev = [
   "pre-commit>=3.6"
 ]
 
-[project.scripts]
-prospectivity = "prospectivity_tools.cli:main"
-
 [tool.black]
-target-version = ["py312"]
+target-version = ["py310"]
 line-length = 100
 
 [tool.ruff]
 line-length = 100
-target-version = "py312"
+target-version = "py310"
 lint.select = ["E", "F", "B", "I", "UP"]
 
 [tool.uv]

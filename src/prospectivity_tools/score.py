@@ -41,9 +41,9 @@ def linear(d: np.ndarray, d0_m: float) -> np.ndarray:
 def compute_likelihood(df: pd.DataFrame) -> pd.DataFrame:
     """Compute prospectivity score for each H3 cell.
 
-    Computes the nearest distance to either rock type and applies the
-    Gaussian fall-off to produce a prospectivity score. Returns a
-    DataFrame with the H3 ID and score columns.
+    Computes prospectivity based on proximity to BOTH rock types.
+    High scores indicate areas where both serpentinite and granodiorite
+    are close (potential contact zones for cobalt mineralization).
 
     Parameters
     ----------
@@ -56,8 +56,14 @@ def compute_likelihood(df: pd.DataFrame) -> pd.DataFrame:
         DataFrame with columns `h3_id` and `score`.
     """
     d0_m = settings.falloff_km * 1_000
-    # compute nearest distance to either rock type
-    nearest = np.minimum(df["dist_a"].to_numpy(), df["dist_b"].to_numpy())
+    
+    # Calculate individual proximity scores for each rock type
+    score_a = gaussian(df["dist_a"].to_numpy(), d0_m)
+    score_b = gaussian(df["dist_b"].to_numpy(), d0_m)
+    
+    # Multiply scores - both rock types must be close for high score
+    # This emphasizes contact zones/interfaces
     df = df.copy()
-    df["score"] = gaussian(nearest, d0_m)
+    df["score"] = score_a * score_b
+    
     return df[["h3_id", "score"]]

@@ -37,22 +37,28 @@ def polys_to_h3(gdf: gpd.GeoDataFrame, tag: str) -> pd.Series:
     else:
         gdf_wgs84 = gdf
 
-    # Convert polygons to H3 cells using h3.polygon_to_cells
+    # Convert polygons to H3 cells using h3.polyfill_geojson
     cell_ids = []
     for geom in gdf_wgs84.geometry:
         if geom.is_valid:
-            # Convert shapely geometry to h3.LatLngPoly format
+            # Convert shapely geometry to GeoJSON format for h3.polyfill_geojson
             if geom.geom_type == 'Polygon':
-                # Extract exterior coordinates as (lat, lng) tuples
-                coords = [(lat, lng) for lng, lat in geom.exterior.coords[:-1]]  # Remove duplicate last point
-                h3_poly = h3.LatLngPoly(coords)
-                cell_ids.extend(h3.polygon_to_cells(h3_poly, res))
+                # Extract exterior coordinates as (lng, lat) tuples for GeoJSON format
+                coords = [(lng, lat) for lng, lat in geom.exterior.coords]  # Keep all coordinates including the closing one
+                geojson_poly = {
+                    "type": "Polygon",
+                    "coordinates": [coords]
+                }
+                cell_ids.extend(h3.polyfill_geojson(geojson_poly, res))
             elif geom.geom_type == 'MultiPolygon':
                 # Handle MultiPolygon geometries
                 for poly in geom.geoms:
-                    coords = [(lat, lng) for lng, lat in poly.exterior.coords[:-1]]
-                    h3_poly = h3.LatLngPoly(coords)
-                    cell_ids.extend(h3.polygon_to_cells(h3_poly, res))
+                    coords = [(lng, lat) for lng, lat in poly.exterior.coords]  # Keep all coordinates including the closing one
+                    geojson_poly = {
+                        "type": "Polygon", 
+                        "coordinates": [coords]
+                    }
+                    cell_ids.extend(h3.polyfill_geojson(geojson_poly, res))
 
     series = pd.Series(pd.unique(cell_ids), name="h3_id")
     series.to_frame().to_feather(cache_file)
@@ -70,11 +76,21 @@ def build_grid(rock_a: gpd.GeoDataFrame, rock_b: gpd.GeoDataFrame) -> pd.DataFra
     Returns
     -------
     pandas.DataFrame
-        A DataFrame with a single ``h3_id`` column listing all unique
-        hexagon IDs that intersect either rock type. Duplicate IDs are
-        removed.
+        A DataFrame with columns ``h3_id``, ``intersects_a``, and ``intersects_b``.
+        ``intersects_a`` and ``intersects_b`` are boolean columns indicating
+        whether each hexagon intersects ``rock_a`` and ``rock_b``, respectively.
     """
     a_cells = polys_to_h3(rock_a, "a")
     b_cells = polys_to_h3(rock_b, "b")
-    grid = pd.DataFrame({"h3_id": pd.unique(pd.concat([a_cells, b_cells]).values)})
+
+    # Combine all unique hexagon IDs
+    all_cells = pd.Series(pd.unique(pd.concat([a_cells, b_cells]).values), name="h3_id")
+
+    # Create DataFrame with intersection flags
+    grid = pd.DataFrame({
+        "h3_id": all_cells,
+        "intersects_a": all_cells.isin(a_cells),
+        "intersects_b": all_cells.isin(b_cells),
+    })
+
     return grid

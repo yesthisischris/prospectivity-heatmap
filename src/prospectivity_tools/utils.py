@@ -25,7 +25,7 @@ def df_more_info(dataframe):
                 for example in examples:
                     output.append(f"    - {example}")
 
-        elif dataframe[col].dtype in ["int64", "float64"]:
+        elif dataframe[col].dtype in ["int64", "float64", "float32", "int32"]:
             output.append(f"  Min: {dataframe[col].min()}, Max: {dataframe[col].max()}, Mean: {dataframe[col].mean()}")
         else:
             output.append(f"  Data type: {dataframe[col].dtype}")

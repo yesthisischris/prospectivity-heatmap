@@ -8,12 +8,14 @@ The output is returned as a pair of GeoDataFrames in a consistent CRS.
 
 from __future__ import annotations
 
+from typing import Tuple
+
 import geopandas as gpd
 
 from .config import settings
 
 
-def load_bedrock(gdf: gpd.GeoDataFrame) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
+def load_bedrock(gdf: gpd.GeoDataFrame) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """Filter the input GeoDataFrame by rock type columns.
 
     The column names for the rock types are taken from the configuration.
