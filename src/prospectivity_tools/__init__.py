@@ -12,6 +12,7 @@ from .ingest import load_bedrock
 from .persist import write_parquet
 from .score import compute_likelihood
 from .viz import build_map
+from .index_h3 import polys_to_h3, build_grid
 from .utils import df_more_info
 
 # Define what gets imported when using `from prospectivity_tools import *`

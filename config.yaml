@@ -1,7 +1,7 @@
 # All distances expressed in metres unless otherwise stated
 crs: "EPSG:26910"          # NAD83 / UTM zone 10N
-rock_a: "serpentinite"
-rock_b: "granodiorite"
+rock_a: "is_ultramafic"
+rock_b: "is_granodiorite"
 falloff_km: 10.0           # Gaussian dₘ (in km)
 
 # H3 grid parameters

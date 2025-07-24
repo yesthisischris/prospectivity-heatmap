@@ -12,7 +12,7 @@ from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
-from h3ronpy import arrowvector as h3av
+import h3
 
 from .config import settings
 
@@ -31,8 +31,30 @@ def polys_to_h3(gdf: gpd.GeoDataFrame, tag: str) -> pd.Series:
     if cache_file.exists():
         return pd.read_feather(cache_file)["h3_id"]
 
-    cell_ids = h3av.polygon_to_cells(gdf.geometry.values, res)
-    series = pd.Series(cell_ids.unique(), name="h3_id")
+    # Convert to WGS84 if not already in geographic coordinates (h3 requirement)
+    if not gdf.crs.is_geographic:
+        gdf_wgs84 = gdf.to_crs("EPSG:4326")  # WGS84
+    else:
+        gdf_wgs84 = gdf
+
+    # Convert polygons to H3 cells using h3.polygon_to_cells
+    cell_ids = []
+    for geom in gdf_wgs84.geometry:
+        if geom.is_valid:
+            # Convert shapely geometry to h3.LatLngPoly format
+            if geom.geom_type == 'Polygon':
+                # Extract exterior coordinates as (lat, lng) tuples
+                coords = [(lat, lng) for lng, lat in geom.exterior.coords[:-1]]  # Remove duplicate last point
+                h3_poly = h3.LatLngPoly(coords)
+                cell_ids.extend(h3.polygon_to_cells(h3_poly, res))
+            elif geom.geom_type == 'MultiPolygon':
+                # Handle MultiPolygon geometries
+                for poly in geom.geoms:
+                    coords = [(lat, lng) for lng, lat in poly.exterior.coords[:-1]]
+                    h3_poly = h3.LatLngPoly(coords)
+                    cell_ids.extend(h3.polygon_to_cells(h3_poly, res))
+
+    series = pd.Series(pd.unique(cell_ids), name="h3_id")
     series.to_frame().to_feather(cache_file)
     return series
 
@@ -54,5 +76,5 @@ def build_grid(rock_a: gpd.GeoDataFrame, rock_b: gpd.GeoDataFrame) -> pd.DataFra
     """
     a_cells = polys_to_h3(rock_a, "a")
     b_cells = polys_to_h3(rock_b, "b")
-    grid = pd.DataFrame({"h3_id": pd.concat([a_cells, b_cells]).unique()})
+    grid = pd.DataFrame({"h3_id": pd.unique(pd.concat([a_cells, b_cells]).values)})
     return grid

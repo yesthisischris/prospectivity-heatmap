@@ -9,18 +9,15 @@ operations provide fast SIMD implementations.
 from __future__ import annotations
 
 import geopandas as gpd
-
-# `h3ronpy` no longer exposes the basic H3 API. Use the standalone `h3`
-# package for geo conversions.
 import h3
 import pandas as pd
 from shapely.geometry import Point
 
 
-def _centroid_to_point(h3_id: int) -> Point:
+def _centroid_to_point(h3_id: str | int) -> Point:
     """Convert an H3 cell ID to a Shapely point (WGS84)."""
-    lat, lon = h3.h3_to_geo(h3_id)
-    return Point(lon, lat)
+    lat, lng = h3.cell_to_latlng(h3_id)  # Updated syntax
+    return Point(lng, lat)              # Shapely expects (x=lng, y=lat)
 
 
 def add_distance_columns(
