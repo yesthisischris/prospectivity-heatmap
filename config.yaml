@@ -11,7 +11,7 @@ rock_b: "is_granodiorite"
 # H3 grid parameters
 grid:
   type: "h3"
-  resolution: 7            # ≈ 2.6 km hexagon edge
+  resolution: 8          # H3 resolution (0-15)
 
 # Output locations
 paths:

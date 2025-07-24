@@ -65,13 +65,16 @@ def polys_to_h3(gdf: gpd.GeoDataFrame, tag: str) -> pd.Series:
     return series
 
 
-def build_grid(rock_a: gpd.GeoDataFrame, rock_b: gpd.GeoDataFrame) -> pd.DataFrame:
+def build_grid(rock_a: gpd.GeoDataFrame, rock_b: gpd.GeoDataFrame, bounds=None) -> pd.DataFrame:
     """Construct a unified H3 grid covering both rock types.
 
     Parameters
     ----------
     rock_a, rock_b:
         GeoDataFrames containing polygons for each rock type.
+    bounds:
+        Optional bounds as [west, south, east, north] in WGS84 coordinates.
+        If None, uses the combined bounds of both rock types.
 
     Returns
     -------
@@ -80,13 +83,43 @@ def build_grid(rock_a: gpd.GeoDataFrame, rock_b: gpd.GeoDataFrame) -> pd.DataFra
         ``intersects_a`` and ``intersects_b`` are boolean columns indicating
         whether each hexagon intersects ``rock_a`` and ``rock_b``, respectively.
     """
+    if bounds is None:
+        # Combine both rock types into a single GeoDataFrame
+        combined = gpd.GeoDataFrame(pd.concat([rock_a, rock_b], ignore_index=True))
+        
+        # Convert to WGS84 to get bounds in the right coordinate system
+        if not combined.crs.is_geographic:
+            combined_wgs84 = combined.to_crs("EPSG:4326")
+        else:
+            combined_wgs84 = combined
+            
+        # Get bounds in WGS84 [minx, miny, maxx, maxy]
+        bounds = combined_wgs84.total_bounds
+    
+    # Generate hexagons covering the bounding box
+    res = settings.grid["resolution"]
+    hexagons = h3.polyfill_geojson(
+        {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [bounds[0], bounds[1]],  # Bottom-left (west, south)
+                    [bounds[0], bounds[3]],  # Top-left (west, north)
+                    [bounds[2], bounds[3]],  # Top-right (east, north)
+                    [bounds[2], bounds[1]],  # Bottom-right (east, south)
+                    [bounds[0], bounds[1]],  # Closing the loop
+                ]
+            ],
+        },
+        res,
+    )
+
+    # Convert hexagons to a DataFrame
+    all_cells = pd.Series(list(hexagons), name="h3_id", dtype=str)
+
+    # Determine intersection flags
     a_cells = polys_to_h3(rock_a, "a")
     b_cells = polys_to_h3(rock_b, "b")
-
-    # Combine all unique hexagon IDs
-    all_cells = pd.Series(pd.unique(pd.concat([a_cells, b_cells]).values), name="h3_id")
-
-    # Create DataFrame with intersection flags
     grid = pd.DataFrame({
         "h3_id": all_cells,
         "intersects_a": all_cells.isin(a_cells),
