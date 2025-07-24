@@ -9,4 +9,5 @@
 -later: little webapp?
 -check the classification
 -write a "future work" section
+-does crs match what they're giving us originally? no reason to convert to a different meters one
 -different approach: something like a kernel density plot on top of the interfaces?

@@ -29,6 +29,7 @@ class Settings(BaseModel):
     rock_a: str
     rock_b: str
     falloff_km: float = Field(gt=0, description="Kernel fall‑off distance in km")
+    alpha: float = Field(gt=0, description="Gaussian shape factor for fall-off steepness")
     grid: Dict[str, Any]
     paths: Dict[str, str]
 
