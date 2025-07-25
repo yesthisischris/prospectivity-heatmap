@@ -1,23 +1,23 @@
 from __future__ import annotations
 
-import matplotlib.pyplot as plt
-import matplotlib as mpl
 import contextily as ctx
 import geopandas as gpd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 from .config import settings
 
 
 def build_static_map(gdf: gpd.GeoDataFrame, output_path: str | None = None) -> plt.Figure:
     """Static prospectivity map with alpha-by-score.
-    
+
     Parameters
     ----------
     gdf : gpd.GeoDataFrame
         GeoDataFrame with 'score' column and geometry.
     output_path : str, optional
         Path to save the map. If None, uses path from config.
-        
+
     Returns
     -------
     plt.Figure
@@ -38,9 +38,7 @@ def build_static_map(gdf: gpd.GeoDataFrame, output_path: str | None = None) -> p
     # Add title
     ax.set_title("Cobalt Prospectivity Map", fontsize=16, fontweight="bold")
 
-    cmap = mpl.colors.LinearSegmentedColormap.from_list(
-        "prospectivity", ["green", "yellow", "red"]
-    )
+    cmap = mpl.colors.LinearSegmentedColormap.from_list("prospectivity", ["green", "yellow", "red"])
     norm = plt.Normalize(vmin=gdf["score"].min(), vmax=gdf["score"].max())
     facecolours = [(*cmap(norm(s))[:3], norm(s)) for s in gdf["score"]]
 
@@ -79,20 +77,28 @@ def build_static_map(gdf: gpd.GeoDataFrame, output_path: str | None = None) -> p
     # Add coordinate labels (convert back to lat/lng for display)
     gdf_latlon = gdf.to_crs("EPSG:4326")
     lon_min, lat_min, lon_max, lat_max = gdf_latlon.total_bounds
-    
+
     # X-axis (longitude) labels - 5 evenly spaced
     lon_ticks = [lon_min + i * (lon_max - lon_min) / 4 for i in range(5)]
     x_ticks = [xmin + i * (xmax - xmin) / 4 for i in range(5)]
-    for x_pos, lon_val in zip(x_ticks, lon_ticks):
-        ax.text(x_pos, ymin - 0.02 * (ymax - ymin), f"{lon_val:.1f}°", 
-                ha="center", va="top", fontsize=9)
-    
+    for x_pos, lon_val in zip(x_ticks, lon_ticks, strict=False):
+        ax.text(
+            x_pos, ymin - 0.02 * (ymax - ymin), f"{lon_val:.1f}°", ha="center", va="top", fontsize=9
+        )
+
     # Y-axis (latitude) labels - 5 evenly spaced
     lat_ticks = [lat_min + i * (lat_max - lat_min) / 4 for i in range(5)]
     y_ticks = [ymin + i * (ymax - ymin) / 4 for i in range(5)]
-    for y_pos, lat_val in zip(y_ticks, lat_ticks):
-        ax.text(xmin - 0.02 * (xmax - xmin), y_pos, f"{lat_val:.1f}°", 
-                ha="right", va="center", fontsize=9, rotation=90)
+    for y_pos, lat_val in zip(y_ticks, lat_ticks, strict=False):
+        ax.text(
+            xmin - 0.02 * (xmax - xmin),
+            y_pos,
+            f"{lat_val:.1f}°",
+            ha="right",
+            va="center",
+            fontsize=9,
+            rotation=90,
+        )
 
     ax.set_axis_off()
 

@@ -45,7 +45,7 @@ def weighted_and(mu_a: np.ndarray, mu_b: np.ndarray, w_a: float) -> np.ndarray:
     """
     w_a = float(np.clip(w_a, 0.0, 1.0))
     w_b = 1.0 - w_a
-    return (mu_a ** w_a) * (mu_b ** w_b)
+    return (mu_a**w_a) * (mu_b**w_b)
 
 
 def compute_likelihood(df: pd.DataFrame) -> pd.DataFrame:
@@ -55,7 +55,7 @@ def compute_likelihood(df: pd.DataFrame) -> pd.DataFrame:
     Parameters
     ----------
     df : pandas.DataFrame
-        DataFrame containing columns `h3_id`, `dist_a`, `dist_b`, 
+        DataFrame containing columns `h3_id`, `dist_a`, `dist_b`,
         `intersects_a`, and `intersects_b`.
 
     Returns

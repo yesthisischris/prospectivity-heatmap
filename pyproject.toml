@@ -17,7 +17,6 @@ dependencies = [
   "shapely==1.8.5",
   "pyogrio==0.4.1",
   "h3==3.7.6",
-  "folium==0.12.1",
   "pydantic==1.10.2",
   "click==8.1",
   "pyarrow==10.0.1",
@@ -28,8 +27,6 @@ dependencies = [
   "pyyaml==6.0",
   "mapclassify==2.4.3",
   "matplotlib==3.5.3",
-  "llama-index>=0.8.69",
-  "langchain>=0.0.354",
   "contextily>=1.6.2",
 ]
 

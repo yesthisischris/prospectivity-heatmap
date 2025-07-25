@@ -10,7 +10,7 @@ modules can import it directly.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any
 
 import yaml
 from pydantic import BaseModel, Field
@@ -30,12 +30,12 @@ class Settings(BaseModel):
     rock_b: str
     falloff_km: float = Field(gt=0, description="Kernel fall‑off distance in km")
     alpha: float = Field(gt=0, description="Gaussian shape factor for fall-off steepness")
-    grid: Dict[str, Any]
-    paths: Dict[str, str]
+    grid: dict[str, Any]
+    paths: dict[str, str]
     weight_a: float = Field(ge=0, le=1, description="Weight for rock type A in scoring")
 
 
-def load_config(path: Union[str, Path] = "config.yaml") -> Settings:
+def load_config(path: str | Path = "config.yaml") -> Settings:
     """Load and validate the configuration file.
 
     Parameters

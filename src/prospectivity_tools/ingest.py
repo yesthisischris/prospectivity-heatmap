@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import Tuple
+
 import geopandas as gpd
+
 from .config import settings
 
 
-def extract_rock_types(gdf: gpd.GeoDataFrame) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
+def extract_rock_types(gdf: gpd.GeoDataFrame) -> tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """Filter the input GeoDataFrame by rock type columns.
 
     The column names for the rock types are taken from the configuration.
@@ -67,21 +68,12 @@ def add_lithology_flags(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     # Build a lowercase text blob for keyword searches
     text_cols = ["rock_type", "unit_desc", "strat_name"]
-    gdf["_search"] = (
-        gdf[text_cols]
-        .fillna("")
-        .agg(" | ".join, axis=1)
-        .str.lower()
-    )
+    gdf["_search"] = gdf[text_cols].fillna("").agg(" | ".join, axis=1).str.lower()
 
     # Binary indicators for target lithologies
-    gdf["is_ultramafic"] = gdf["_search"].str.contains(
-        "ultramafic|serpentinite"
-    ).astype(int)
+    gdf["is_ultramafic"] = gdf["_search"].str.contains("ultramafic|serpentinite").astype(int)
 
-    gdf["is_granodiorite"] = gdf["_search"].str.contains(
-        "granodiorite"
-    ).astype(int)
+    gdf["is_granodiorite"] = gdf["_search"].str.contains("granodiorite").astype(int)
 
     # Remove the temporary search column
     gdf = gdf.drop(columns=["_search"])

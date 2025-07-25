@@ -12,7 +12,9 @@ def df_more_info(dataframe):
 
     for col in dataframe.columns:
         output.append(f"Column: {col}")
-        output.append(f"  Missing: {dataframe[col].isnull().sum()} ({dataframe[col].isnull().mean():.1%})")
+        output.append(
+            f"  Missing: {dataframe[col].isnull().sum()} ({dataframe[col].isnull().mean():.1%})"
+        )
         if dataframe[col].dtype == "object":
             # if fewer than 5 unique values, describe them as a count of each value
             if dataframe[col].nunique() <= 5:
@@ -27,7 +29,10 @@ def df_more_info(dataframe):
                     output.append(f"    - {example}")
 
         elif dataframe[col].dtype in ["int64", "float64", "float32", "int32"]:
-            output.append(f"  Min: {dataframe[col].min()}, Max: {dataframe[col].max()}, Mean: {dataframe[col].mean()}")
+            output.append(
+                f"  Min: {dataframe[col].min()}, Max: {dataframe[col].max()}, "
+                f"  Mean: {dataframe[col].mean()}"
+            )
         else:
             output.append(f"  Data type: {dataframe[col].dtype}")
         output.append("\n")

@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from prospectivity_tools.score import gaussian, weighted_and, compute_likelihood
+from prospectivity_tools.score import compute_likelihood, gaussian, weighted_and
 
 
 def test_gaussian_at_zero_distance():
@@ -20,19 +20,21 @@ def test_weighted_and_equal_weights():
     mu_b = np.array([0.6])
     w_a = 0.5
     result = weighted_and(mu_a, mu_b, w_a)
-    expected = (0.8 ** 0.5) * (0.6 ** 0.5)
+    expected = (0.8**0.5) * (0.6**0.5)
     assert np.isclose(result[0], expected)
 
 
 def test_compute_likelihood_structure():
     """Test that compute_likelihood returns the correct structure."""
-    df = pd.DataFrame({
-        'h3_id': ['test_cell'],
-        'dist_a': [0.0],
-        'dist_b': [0.0],
-        'intersects_a': [True],
-        'intersects_b': [True]
-    })
+    df = pd.DataFrame(
+        {
+            "h3_id": ["test_cell"],
+            "dist_a": [0.0],
+            "dist_b": [0.0],
+            "intersects_a": [True],
+            "intersects_b": [True],
+        }
+    )
     result = compute_likelihood(df)
-    expected_columns = ['h3_id', 'intersects_a', 'intersects_b', 'score']
+    expected_columns = ["h3_id", "intersects_a", "intersects_b", "score"]
     assert list(result.columns) == expected_columns
