@@ -22,7 +22,7 @@ H3 hexagonal grids, basic fuzzy logic, and a configurable pipeline. It ingests b
    pip install -e .
     ```
 
-    Alternatively, you can use `uv` or devcontainer as described below.
+    Alternatively, you can use `uv` as described below.
 
 2. Place your `BedrockP.gpkg` file into `data/raw/` and adjust `config.yaml`
    as needed to select different rock types or H3 resolutions.
@@ -51,10 +51,6 @@ uv pip install -e .[dev]
 
 If you are working in Jupyter, ensure the kernel points to this environment so
 that notebooks can `import prospectivity_tools` without issues.
-
-### Devcontainer
-
-This repository includes a dev container configuration for consistent development. To use it, install [Visual Studio Code](https://code.visualstudio.com/) and the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension. Then, open the repository in VS Code and reopen it in the container when prompted.
 
 ## Approach
 
