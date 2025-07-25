@@ -1,21 +1,10 @@
-"""Data ingestion helpers.
-
-This module contains logic to extract subsets corresponding to the two
-rock types defined in the configuration. The input GeoDataFrame is filtered
-based on column names specified in the configuration, where values are 0 or 1.
-The output is returned as a pair of GeoDataFrames in a consistent CRS.
-"""
-
 from __future__ import annotations
-
 from typing import Tuple
-
 import geopandas as gpd
-
 from .config import settings
 
 
-def load_bedrock(gdf: gpd.GeoDataFrame) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
+def extract_rock_types(gdf: gpd.GeoDataFrame) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFrame]:
     """Filter the input GeoDataFrame by rock type columns.
 
     The column names for the rock types are taken from the configuration.
@@ -57,3 +46,44 @@ def load_bedrock(gdf: gpd.GeoDataFrame) -> Tuple[gpd.GeoDataFrame, gpd.GeoDataFr
         raise ValueError(f"No rows found for rock types: {', '.join(missing)}")
 
     return rock_a, rock_b
+
+
+def add_lithology_flags(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Add binary lithology flags for ultramafic and granodiorite rocks.
+
+    Creates binary indicators for target lithologies by searching through
+    text columns for relevant keywords.
+
+    Parameters
+    ----------
+    gdf : GeoDataFrame
+        Input GeoDataFrame containing geological data.
+
+    Returns
+    -------
+    GeoDataFrame
+        GeoDataFrame with added columns: is_ultramafic, is_granodiorite
+
+    """
+    # Build a lowercase text blob for keyword searches
+    text_cols = ["rock_type", "unit_desc", "strat_name"]
+    gdf["_search"] = (
+        gdf[text_cols]
+        .fillna("")
+        .agg(" | ".join, axis=1)
+        .str.lower()
+    )
+
+    # Binary indicators for target lithologies
+    gdf["is_ultramafic"] = gdf["_search"].str.contains(
+        "ultramafic|serpentinite"
+    ).astype(int)
+
+    gdf["is_granodiorite"] = gdf["_search"].str.contains(
+        "granodiorite"
+    ).astype(int)
+
+    # Remove the temporary search column
+    gdf = gdf.drop(columns=["_search"])
+
+    return gdf

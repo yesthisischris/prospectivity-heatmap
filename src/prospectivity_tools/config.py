@@ -32,6 +32,7 @@ class Settings(BaseModel):
     alpha: float = Field(gt=0, description="Gaussian shape factor for fall-off steepness")
     grid: Dict[str, Any]
     paths: Dict[str, str]
+    weight_a: float = Field(ge=0, le=1, description="Weight for rock type A in scoring")
 
 
 def load_config(path: Union[str, Path] = "config.yaml") -> Settings:

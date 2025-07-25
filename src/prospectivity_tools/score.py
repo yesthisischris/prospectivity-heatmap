@@ -1,11 +1,3 @@
-"""Compute prospectivity score from distances using a Gaussian kernel.
-
-This module defines functions to convert distances to a likelihood score
-between 0 and 1. The Gaussian fall‑off is controlled by the
-`falloff_km` parameter in the configuration. The score for each cell
-is based on the nearest distance to either rock type.
-"""
-
 import numpy as np
 import pandas as pd
 
@@ -35,17 +27,30 @@ def gaussian(d: np.ndarray, d0_m: float, alpha: float = 2.0) -> np.ndarray:
     return np.exp(-((d / d0_m) ** alpha))
 
 
-def linear(d: np.ndarray, d0_m: float) -> np.ndarray:
-    """Return linear decay kernel clipped to 0."""
-    return np.clip(1 - (d / d0_m), 0, 1)
+def weighted_and(mu_a: np.ndarray, mu_b: np.ndarray, w_a: float) -> np.ndarray:
+    """
+    Weighted geometric AND.
+
+    Parameters
+    ----------
+    mu_a, mu_b : np.ndarray
+        Membership values (0–1) for rock types A and B.
+    w_a : float
+        Relative importance of rock type A.
+
+    Returns
+    -------
+    np.ndarray
+        Combined membership (0–1).
+    """
+    w_a = float(np.clip(w_a, 0.0, 1.0))
+    w_b = 1.0 - w_a
+    return (mu_a ** w_a) * (mu_b ** w_b)
 
 
 def compute_likelihood(df: pd.DataFrame) -> pd.DataFrame:
-    """Compute prospectivity score for each H3 cell.
-
-    Computes prospectivity based on proximity to BOTH rock types.
-    High scores indicate areas where both serpentinite and granodiorite
-    are close (potential contact zones for cobalt mineralization).
+    """
+    Compute prospectivity score for each H3 cell using a weighted fuzzy‑AND.
 
     Parameters
     ----------
@@ -56,17 +61,18 @@ def compute_likelihood(df: pd.DataFrame) -> pd.DataFrame:
     Returns
     -------
     pandas.DataFrame
-        DataFrame with columns `h3_id`, `score`, and `intersects_both`.
+        DataFrame with columns `h3_id`, `score`, `intersects_a`, and `intersects_b`.
     """
     d0_m = settings.falloff_km * 1_000
-    
-    # Calculate individual proximity scores for each rock type
-    score_a = gaussian(df["dist_a"].to_numpy(), d0_m, settings.alpha)
-    score_b = gaussian(df["dist_b"].to_numpy(), d0_m, settings.alpha)
-    
-    # Multiply scores - both rock types must be close for high score
-    # This emphasizes contact zones/interfaces
-    df = df.copy()
-    df["score"] = score_a * score_b
-    
-    return df[["h3_id", "score", "intersects_a", "intersects_b"]]
+
+    # Convert distances to fuzzy memberships
+    mu_a = gaussian(df["dist_a"].to_numpy(), d0_m, settings.alpha)
+    mu_b = gaussian(df["dist_b"].to_numpy(), d0_m, settings.alpha)
+
+    # Combine with weighted AND
+    score = weighted_and(mu_a, mu_b, settings.weight_a)
+
+    # Package result
+    out = df[["h3_id", "intersects_a", "intersects_b"]].copy()
+    out["score"] = score
+    return out

@@ -1,74 +1,101 @@
-"""Visualisation of prospectivity scores using Folium.
-
-This module contains helper functions to convert H3 hexagon identifiers
-and their associated scores into GeoJSON features and to build an
-interactive map using Folium. The resulting map shades each hexagon
-according to its prospectivity score and saves an HTML file to the
-location specified in the configuration.
-"""
-
 from __future__ import annotations
 
-import folium
-import h3
-import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import contextily as ctx
+import geopandas as gpd
 
 from .config import settings
 
 
-def hex_to_geojson(h3_ids: pd.Series, scores: pd.Series) -> list:
-    """Generate GeoJSON features for H3 cells with scores above 0.05."""
-    features = []
-    for hid, score in zip(h3_ids, scores):
-        if score < 0.05:
-            continue
-        try:
-            boundary = [(lng, lat) for lat, lng in h3.h3_to_geo_boundary(hid)]
-            features.append({
-                "type": "Feature",
-                "geometry": {"type": "Polygon", "coordinates": [boundary]},
-                "properties": {"score": float(score)},
-            })
-        except Exception as e:
-            print(f"Error processing H3 ID {hid}: {e}")
-    return features
-
-
-def build_map(df: pd.DataFrame) -> folium.Map:
-    """Create an interactive Folium map colored by prospectivity score."""
-    m = folium.Map(location=[50.0, -122.0], zoom_start=7, tiles="cartodb positron")
+def build_static_map(gdf: gpd.GeoDataFrame, output_path: str | None = None) -> plt.Figure:
+    """Static prospectivity map with alpha-by-score.
     
-    if df.empty or not {"h3_id", "score"}.issubset(df.columns):
-        return m
-
-    features = hex_to_geojson(df["h3_id"], df["score"])
-    if not features:
-        return m
-
-    min_score, max_score = df["score"].min(), df["score"].max()
-
-    def get_color(score: float) -> str:
-        """Red-yellow-green gradient with opacity based on score."""
-        norm = (score - min_score) / (max_score - min_score) if max_score > min_score else 0.5
+    Parameters
+    ----------
+    gdf : gpd.GeoDataFrame
+        GeoDataFrame with 'score' column and geometry.
+    output_path : str, optional
+        Path to save the map. If None, uses path from config.
         
-        if norm < 0.5:
-            # Green to Yellow (low to mid scores)
-            r, g, b = int(255 * norm * 2), 255, 0
-        else:
-            # Yellow to Red (mid to high scores)
-            r, g, b = 255, int(255 * (2 - norm * 2)), 0
-        
-        return f"rgba({r}, {g}, {b}, {norm})"
+    Returns
+    -------
+    plt.Figure
+        The matplotlib figure object
+    """
+    if not output_path:
+        output_path = settings.paths["static_map"]
 
-    folium.GeoJson(
-        {"type": "FeatureCollection", "features": features},
-        style_function=lambda feat: {
-            "fillColor": get_color(feat["properties"]["score"]),
-            "weight": 0,
-            "fillOpacity": 1.0,
-        },
-        tooltip=folium.GeoJsonTooltip(fields=["score"], aliases=["Score"]),
-    ).add_to(m)
+    if gdf.empty or "score" not in gdf.columns:
+        return plt.figure()
 
-    m.save(settings.paths["interactive_html"])
-    return m
+    # Convert to Web Mercator for plotting with basemap
+    gdf = gdf.to_crs("EPSG:3857")
+
+    # Plotting
+    fig, ax = plt.subplots(figsize=(12, 10))
+
+    # Add title
+    ax.set_title("Cobalt Prospectivity Map", fontsize=16, fontweight="bold")
+
+    cmap = mpl.colors.LinearSegmentedColormap.from_list(
+        "prospectivity", ["green", "yellow", "red"]
+    )
+    norm = plt.Normalize(vmin=gdf["score"].min(), vmax=gdf["score"].max())
+    facecolours = [(*cmap(norm(s))[:3], norm(s)) for s in gdf["score"]]
+
+    gdf.plot(ax=ax, color=facecolours, edgecolor="none")
+
+    # Add basemap
+    ctx.add_basemap(
+        ax,
+        crs=gdf.crs,
+        source=ctx.providers.CartoDB.Positron,
+        zoom=10,
+    )
+
+    # Color bar
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax, shrink=0.8, aspect=20)
+    cbar.set_label("Prospectivity score", rotation=270, labelpad=20)
+
+    # 50-km scale bar
+    xmin, ymin, xmax, ymax = gdf.total_bounds
+    scalelen = 50_000
+    sx = xmin + 0.05 * (xmax - xmin)
+    sy = ymin + 0.05 * (ymax - ymin)
+    ax.plot([sx, sx + scalelen], [sy, sy], color="k", linewidth=3)
+    ax.text(
+        sx + scalelen / 2,
+        sy + 0.02 * (ymax - ymin),
+        "50 km",
+        ha="center",
+        va="bottom",
+        fontsize=10,
+        weight="bold",
+    )
+
+    # Add coordinate labels (convert back to lat/lng for display)
+    gdf_latlon = gdf.to_crs("EPSG:4326")
+    lon_min, lat_min, lon_max, lat_max = gdf_latlon.total_bounds
+    
+    # X-axis (longitude) labels - 5 evenly spaced
+    lon_ticks = [lon_min + i * (lon_max - lon_min) / 4 for i in range(5)]
+    x_ticks = [xmin + i * (xmax - xmin) / 4 for i in range(5)]
+    for x_pos, lon_val in zip(x_ticks, lon_ticks):
+        ax.text(x_pos, ymin - 0.02 * (ymax - ymin), f"{lon_val:.1f}°", 
+                ha="center", va="top", fontsize=9)
+    
+    # Y-axis (latitude) labels - 5 evenly spaced
+    lat_ticks = [lat_min + i * (lat_max - lat_min) / 4 for i in range(5)]
+    y_ticks = [ymin + i * (ymax - ymin) / 4 for i in range(5)]
+    for y_pos, lat_val in zip(y_ticks, lat_ticks):
+        ax.text(xmin - 0.02 * (xmax - xmin), y_pos, f"{lat_val:.1f}°", 
+                ha="right", va="center", fontsize=9, rotation=90)
+
+    ax.set_axis_off()
+
+    fig.savefig(output_path, dpi=300, bbox_inches="tight")
+
+    return fig

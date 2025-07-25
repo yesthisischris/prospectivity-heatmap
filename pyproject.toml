@@ -30,6 +30,7 @@ dependencies = [
   "matplotlib==3.5.3",
   "llama-index>=0.8.69",
   "langchain>=0.0.354",
+  "contextily>=1.6.2",
 ]
 
 [project.optional-dependencies]
@@ -40,6 +41,9 @@ dev = [
   "black>=24.7",
   "pre-commit>=3.6"
 ]
+
+[project.scripts]
+prospectivity = "prospectivity_tools.cli:main"
 
 [tool.black]
 target-version = ["py310"]

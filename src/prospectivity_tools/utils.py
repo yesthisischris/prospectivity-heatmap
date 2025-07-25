@@ -12,6 +12,7 @@ def df_more_info(dataframe):
 
     for col in dataframe.columns:
         output.append(f"Column: {col}")
+        output.append(f"  Missing: {dataframe[col].isnull().sum()} ({dataframe[col].isnull().mean():.1%})")
         if dataframe[col].dtype == "object":
             # if fewer than 5 unique values, describe them as a count of each value
             if dataframe[col].nunique() <= 5:

@@ -4,18 +4,15 @@ rock_a: "is_ultramafic"
 rock_b: "is_granodiorite"
 falloff_km: 10.0           # Gaussian dₘ (in km)
 alpha: 1                 # Gaussian shape factor (higher = steeper fall-off)
-crs: "EPSG:26910"          # NAD83 / UTM zone 10N
-rock_a: "is_ultramafic"
-rock_b: "is_granodiorite"
+weight_a: 0.5            # Relative influence weight for rock_a (0-1)
 
 # H3 grid parameters
 grid:
   type: "h3"
-  resolution: 8          # H3 resolution (0-15)
+  resolution: 7          # H3 resolution (0-15)
 
 # Output locations
 paths:
   input_gpkg: "data/raw/BedrockP.gpkg"
-  parquet: "data/processed/prospectivity.parquet"
-  static_png: "data/processed/prospectivity.png"
-  interactive_html: "data/processed/prospectivity.html"
+  output_gpkg: "data/processed/prospectivity_scores.gpkg"
+  static_map: "data/processed/prospectivity.png"

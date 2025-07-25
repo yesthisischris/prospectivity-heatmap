@@ -7,21 +7,22 @@ for details.
 
 # Import everything from submodules
 from .config import settings
-from .distance import add_distance_columns
-from .ingest import load_bedrock
-from .persist import write_parquet
+from .geospatial import add_distance_columns, polys_to_h3, build_grid, h3_to_geodataframe
+from .ingest import extract_rock_types, add_lithology_flags
 from .score import compute_likelihood
-from .viz import build_map
-from .index_h3 import polys_to_h3, build_grid
+from .viz import build_static_map
 from .utils import df_more_info
 
 # Define what gets imported when using `from prospectivity_tools import *`
 __all__ = [
     'settings',
     'add_distance_columns',
-    'load_bedrock',
-    'write_parquet',
+    'polys_to_h3',
+    'build_grid',
+    'h3_to_geodataframe',
+    'extract_rock_types',
+    'add_lithology_flags',
     'compute_likelihood',
-    'build_map',
-    'utils'
+    'build_static_map',
+    'df_more_info'
 ]
