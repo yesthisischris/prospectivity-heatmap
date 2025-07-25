@@ -9,7 +9,7 @@ weight_a: 0.5            # Relative influence weight for rock_a (0-1)
 # H3 grid parameters
 grid:
   type: "h3"
-  resolution: 7          # H3 resolution (0-15)
+  resolution: 8          # H3 resolution (0-15)
 
 # Output locations
 paths:

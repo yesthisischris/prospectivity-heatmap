@@ -74,6 +74,7 @@ A detailed look at the data and methods exploration underpinning this package is
 
 ## Future Work
 
+- Improve static map generation time (currently it's slow but looks great)
 - Implement a more sophisticated fuzzy logic overlay method that incorporates additional geological features
 - Validate spatial modeling results with field data to generate AUC scores
 - (If needed) move geospatial analysis to SQL database for better performance and scalability
