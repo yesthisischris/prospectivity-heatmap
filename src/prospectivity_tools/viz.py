@@ -42,7 +42,11 @@ def build_static_map(gdf: gpd.GeoDataFrame, output_path: str | None = None) -> p
     norm = plt.Normalize(vmin=gdf["score"].min(), vmax=gdf["score"].max())
     facecolours = [(*cmap(norm(s))[:3], norm(s)) for s in gdf["score"]]
 
-    gdf.plot(ax=ax, color=facecolours, edgecolor="none")
+    gdf.plot(ax=ax, color=facecolours, edgecolor="none", linewidth=0)
+
+    # Set tight bounds to data extent
+    ax.set_xlim(gdf.total_bounds[0], gdf.total_bounds[2])
+    ax.set_ylim(gdf.total_bounds[1], gdf.total_bounds[3])
 
     # Add basemap
     ctx.add_basemap(

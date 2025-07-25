@@ -5,9 +5,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libspatialindex-dev \
       libproj-dev \
       libgeos-dev \
+      libgdal30 \
       && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install UV
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
-
+# UV is installed via devcontainer feature
 # Python and GDAL are added via devcontainer features
