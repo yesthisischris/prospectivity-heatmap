@@ -47,6 +47,10 @@ dependencies included:
 ```bash
 uv venv
 uv pip install -e .[dev]
+# Activate the virtual environment
+source .venv/bin/activate  # On Linux/macOS
+# or
+.venv\Scripts\activate     # On Windows
 ```
 
 If you are working in Jupyter, ensure the kernel points to this environment so
